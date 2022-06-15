@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Awesome Exchange</title>
+</head>
+<body>
+<h1>available currency:</h1>
+<ul style="float:left;">
+{% for key in ctx["available_curr"] %}
+<li>{{key}}</li>
+{% endfor %}
+</ul>
+{% if ctx["errors"] is defined %}
+    {% for key in ctx["errors"] %}
+        <p>{{key}}</p>
+    {% endfor %}
+{% endif %}
+<form action="/calculate" method="post">
+    <label>Kupno</label>
+    <input type="text" name="curr_to_buy" value="{{ ctx['curr_to_buy'] }}">
+    <br>
+    <label>Sprzedaz</label>
+    <input type="text" name="curr_to_sell" value="{{ ctx['curr_to_sell'] }}">
+    <br>
+    <label>Ilosc</label>
+    <input type="number" name="amount" value="{{ ctx['amount'] }}">
+    <input type="submit">
+</form>
+</body>
+</html>
