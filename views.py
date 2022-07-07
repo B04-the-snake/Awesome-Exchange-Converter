@@ -1,43 +1,19 @@
-from flask import Flask, render_template, request
-from utils import get_available_curr, validate_form
-from exchange import exchange_engine
+from flask import Flask, render_template, request, url_for
+from utils import get_available_curr, rate_engine
+import requests
+import os
 
 app = Flask(__name__)
 
+# Adding a secret API_V6_KEY from .env
+API_KEY = os.getenv("API_KEY")
+
 # Show main kantor page
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def get_start():
-    return render_template("page.html", ctx={"available_curr": get_available_curr()})
+    return render_template("page.html", ctx={"from_curr_name": get_available_curr()})
 
-# Create calculate layer
-@app.route("/calculate", methods=["POST"])
-def calculate():
-    curr_to_sell = request.form["curr_to_sell"]
-    curr_to_buy = request.form["curr_to_buy"]
-    amount = request.form["amount"]
-    errors = validate_form(curr_to_sell, curr_to_buy, amount)
-    if errors == []:
-        res = exchange_engine(
-            curr_to_sell=curr_to_sell, curr_to_buy=curr_to_buy, amount=amount
-        )
-        return str(res)
-    else:
-        return render_template(
-            "page.html",
-            ctx={
-                "errors": errors,
-                "curr_to_sell": curr_to_sell,
-                "curr_to_buy": curr_to_buy,
-                "amount": amount,
-                "available_curr": get_available_curr(),
-            },
-        )
-# Invalid URL
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template("404.html"), 404
-
-# Internal Server Error
-@app.errorhandler(500)
-def page_not_found(e):
-    return render_template("500.html"), 500
+@app.route("/calculation", methods=["GET", "POST"])
+def home():
+    if request.method == 'GET':
+        return rate_engine()

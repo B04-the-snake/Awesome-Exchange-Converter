@@ -1,17 +1,31 @@
-import requests
-from const import URL
+from os import getenv
+from flask import request
+import requests as r
+
+# Adding a secret API_V6_KEY from .env
+API_KEY = getenv("API_KEY")
+AVAILABLE_CURR = ["EUR", "USD", "PLN", "GBP", "AUD", "CHF", "JPY"]
 
 
-def get_available_curr(url=URL):
-    return requests.get(url=url + "EUR").json().get("rates").keys()
+def get_available_curr():
+    return AVAILABLE_CURR
 
-def validate_form(curr_to_sell, curr_to_buy, amount):
-    errors = []
-    available_curr = get_available_curr()
-    if curr_to_sell not in available_curr:
-        errors.append("Not valid currency - curr_to_sell")
-    if curr_to_buy not in available_curr:
-        errors.append("Not valid currency - curr_to_buy")
-    if not amount.isnumeric():
-        errors.append("Not valid amount")
-    return errors
+def rate_engine():
+    # Testowanie
+    # print(request.__dir__, "dir")
+    # print(request.__dict__, "dict")
+
+    amount = request.args.get('amount')
+    amount = float(amount)
+
+    from_curr = request.args.get('from_curr')
+    to_curr = request.args.get('to_curr')
+
+    URL = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/{from_curr}"
+
+    response = r.get(url=URL).json()
+    rate = response['conversion_rates'][to_curr]
+    rate = float(rate)
+    result = round(rate * amount, 2)
+
+    return str(result)

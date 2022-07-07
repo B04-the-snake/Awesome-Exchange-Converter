@@ -1,31 +1,54 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <title>Awesome Exchange</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awesome Exchange Converter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/look.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-<h1>available currency:</h1>
-<ul style="float:left;">
-{% for key in ctx["available_curr"] %}
-<li>{{key}}</li>
-{% endfor %}
-</ul>
-{% if ctx["errors"] is defined %}
-    {% for key in ctx["errors"] %}
-        <p>{{key}}</p>
-    {% endfor %}
-{% endif %}
-<form action="/calculate" method="post">
-    <label>Kupno</label>
-    <input type="text" name="curr_to_buy" value="{{ ctx['curr_to_buy'] }}">
-    <br>
-    <label>Sprzedaz</label>
-    <input type="text" name="curr_to_sell" value="{{ ctx['curr_to_sell'] }}">
-    <br>
-    <label>Ilosc</label>
-    <input type="number" name="amount" value="{{ ctx['amount'] }}">
-    <input type="submit">
-</form>
+    <div class="wrapper">
+        <header>Awesome Exchange Converter</header>
+        <form action="/" method="POST" id="myform">
+            <div class="amount">
+                <p>Enter Amount</p>
+                <input id="currencyValue" type="number" min="0" oninput="validity.valid||(value='')" placeholder="0" value="{{ amount }}" required="required">
+            </div>
+            <div class="drop-list">
+                <div class="from">
+                    <p>From</p>
+                    <div class="select-box">
+                        <img src="https://flagcdn.com/48x36/pl.png" alt="flag"/>
+                        <select required name="from_curr" id="from_curr">
+                            {% if ctx["from_curr_name"] %}
+                                {% for curr_name_short in ctx["from_curr_name"] %}
+                                    <option id="{{ curr_name_short }}-from" value="{{ curr_name_short }}">{{ curr_name_short }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="icon"><i class="fas fa-exchange-alt"></i></div>
+                <div class="to">
+                    <p>To</p>
+                    <div class="select-box">
+                        <img src="https://flagcdn.com/48x36/eu.png" alt="flag">
+                        <select required name="to_curr" id="to_curr">
+                            {% if ctx["from_curr_name"] %}
+                                {% for curr_name_short in ctx["from_curr_name"] %}
+                                    <option id="{{ curr_name_short }}-end" value="{{ curr_name_short }}">{{ curr_name_short }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="result-exchange-rate" class="exchange-rate">Getting exchange rate...</div>
+            <button>Get Exchange Rate</button>
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
