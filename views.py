@@ -13,7 +13,12 @@ API_KEY = os.getenv("API_KEY")
 def get_start():
     return render_template("page.html", ctx={"from_curr_name": get_available_curr()})
 
+
 @app.route("/calculation", methods=["GET", "POST"])
 def home():
-    if request.method == 'GET':
-        return rate_engine()
+    if request.method == "GET":
+        return rate_engine(
+            amount=float(request.args.get("amount")),
+            from_curr=request.args.get("from_curr"),
+            to_curr=request.args.get("to_curr")
+        )

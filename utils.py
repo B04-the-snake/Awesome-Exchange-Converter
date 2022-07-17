@@ -10,22 +10,15 @@ AVAILABLE_CURR = ["EUR", "USD", "PLN", "GBP", "AUD", "CHF", "JPY"]
 def get_available_curr():
     return AVAILABLE_CURR
 
-def rate_engine():
+def rate_engine(amount,from_curr,to_curr):
     # Testowanie
     # print(request.__dir__, "dir")
     # print(request.__dict__, "dict")
-
-    amount = request.args.get('amount')
-    amount = float(amount)
-
-    from_curr = request.args.get('from_curr')
-    to_curr = request.args.get('to_curr')
-
     URL = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/{from_curr}"
-
-    response = r.get(url=URL).json()
-    rate = response['conversion_rates'][to_curr]
-    rate = float(rate)
-    result = round(rate * amount, 2)
-
-    return str(result)
+    try:
+        response = r.get(url=URL).json()
+        rate = float(response['conversion_rates'][to_curr])
+    # no bare except
+    except:
+        return "coś poszło nie tak"
+    return str(round(rate * amount, 2))
